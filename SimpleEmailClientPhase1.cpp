@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 
         //connecting to server
         if (connect(client_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-            cerr << "\nConnection Failed \n";
+            cerr << "Connection Failed \n";
             exit(2);
         }
         else {
@@ -70,9 +70,21 @@ int main(int argc, char *argv[]) {
         recv(client_fd , inbuffer, 1024, 0);
         // cout << "Hello" <<"\n";
         string inbuff(inbuffer);
-        cout  << inbuff << "\n";
+        if(inbuff=="fail"){
+            strcpy(outbuffer, "okay");
+            send(client_fd, outbuffer, 1024, 0);
+            close(client_fd);
+            // cout << "Fail";
+            // close(client_fd);
+            exit(0);
+        }
 
-        strcpy(outbuffer, "quit\0");
-        send(client_fd, outbuffer, 1024, 0);
+        else{
+            cout  << inbuff << "\n";
+            strcpy(outbuffer, "quit\0");
+            send(client_fd, outbuffer, 1024, 0);
+            close(client_fd);
+        }
+
     }
 }

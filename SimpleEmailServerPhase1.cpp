@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     recv(new_fd , inbuffer, 1024, 0);
     // cout << "Hello" <<"\n";
     string inbuff(inbuffer);
-    cout  << inbuff << "\n";
+    // cout  << inbuff << "\n";
 
     //Instantiating credential strings
     string username, passwd, realpwd;
@@ -95,6 +95,8 @@ int main(int argc, char *argv[]) {
 
     catch (...) {
       cout << "Unknown Command\n";
+      strcpy(outbuffer,"fail");
+      send(new_fd,outbuffer,1024,0);
       close(new_fd);
     }
 
@@ -119,13 +121,18 @@ int main(int argc, char *argv[]) {
     //checking if the user is present.
     if (found == 0) {
       cout << "Invalid User\n";
+      strcpy(outbuffer,"fail");
+      send(new_fd,outbuffer,1024,0);  //CHANGES MADE HERE
+      // recv(new_fd, inbuffer, 1024, 0);
       close(new_fd);
       close(sock_fd);
     }
 
     //Checking if the password matches
     else if (realpwd != passwd) {
-      cout << "Wrong Password\n";
+      cout << "Wrong Passwd\n";
+      strcpy(outbuffer,"fail");
+      send(new_fd,outbuffer,1024,0);
       close(new_fd);
       close(sock_fd);
       // close(sock_fd);
@@ -143,6 +150,7 @@ int main(int argc, char *argv[]) {
       recv(new_fd , inbuffer, 1024, 0);
       inbuff = string(inbuffer);
       if (inbuff == "quit") {
+        cout << "Bye " << username <<"\n";
         close(new_fd);
         close(sock_fd);
         // exit(1);
