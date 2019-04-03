@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
       recv(new_fd , inbuffer, 1024, 0);
       // cout << "Hello" <<"\n";
       string inbuff(inbuffer);
-      cout  << inbuff << "\n";
+      //cout  << inbuff << "\n";
 
       //Instantiating credential strings
       string username, passwd, realpwd;
@@ -183,12 +183,13 @@ int main(int argc, char *argv[]) {
           send(new_fd, outbuffer, 1024, 0);
           recv(new_fd , inbuffer, 1024, 0);
           inbuff = string(inbuffer);
-          cout << inbuff << "\n";
+          //cout << inbuff << "\n";
           int num_messages = stoi(inbuff);
 
 
           //FILE TRANSFER DONE :- BUG only one file is being transferred . Check that
-
+          //Bug Removed
+          int successread = 1;
           for (int i = 0; i < num_messages; i++) {
             recv(new_fd , inbuffer, 1024, 0);
             inbuff = string(inbuffer);
@@ -209,10 +210,12 @@ int main(int argc, char *argv[]) {
                   break;
                 }
               }
-              closedir(userfd);
+              closedir(userfd);  //Brings back pointer to the top
 
               if (count == 0) {
                 cout << "Message Read Fail\n";
+                // cout << "Yeh wala\n";
+                successread = 0;
                 strcpy(outbuffer, "fail");
                 send(new_fd, outbuffer, 1024, 0);
                 close(new_fd);
@@ -229,10 +232,10 @@ int main(int argc, char *argv[]) {
                 long filesize;
                 fseek (rFile , 0 , SEEK_END);
                 filesize = ftell (rFile);
-                cout << "FileSize " << filesize << "\n";
+                // cout << "FileSize " << filesize << "\n";  //Debugging wala
                 rewind (rFile);
                 int remBytes = filesize % 1024;
-                cout << "RemBytes " << remBytes << "\n";
+                // cout << "RemBytes " << remBytes << "\n";  //Debugging wala
                 strcpy(outbuffer, to_string(remBytes).c_str());
                 send(new_fd, outbuffer, 1024, 0);
                 long numBatches = filesize/1024 + 1;
@@ -253,10 +256,11 @@ int main(int argc, char *argv[]) {
                 fclose(rFile);
               }
 
-            }
+            }  // If for RETRV command
 
             else {
               cout << "Unknown Command\n";
+              successread = 0;
               strcpy(outbuffer, "fail");
               send(new_fd, outbuffer, 1024, 0);
               close(new_fd);
@@ -266,19 +270,22 @@ int main(int argc, char *argv[]) {
           }
 
 
-        recv(new_fd , inbuffer, 1024, 0);
-        inbuff = string(inbuffer);
-        cout << inbuff << "\n";
-        if (inbuff == "quit") {
-          cout << "Quitting\n";
-          close(new_fd);
-        }
+          if(successread == 1){
+            recv(new_fd , inbuffer, 1024, 0);
+            inbuff = string(inbuffer);
+            // cout << inbuff << "\n";
+            if (inbuff == "quit") {
+              cout << "Bye " << username << "\n";
+              close(new_fd);
+            }
 
-        else{
-          cout << "Unknown Comand\n";
-          cout << "Yeh wala\n";
-          close(new_fd);
-        }
+            else{
+              cout << "Unknown Comand\n";
+              //cout << "Yeh wala\n";
+              close(new_fd);
+            }
+          }
+
 
 
           //  if (inbuff.find("RETRV") != std::string::npos) {

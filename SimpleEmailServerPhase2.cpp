@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
       recv(new_fd , inbuffer, 1024, 0);
       // cout << "Hello" <<"\n";
       string inbuff(inbuffer);
-      cout  << inbuff << "\n";
+      //cout  << inbuff << "\n";
 
       //Instantiating credential strings
       string username, passwd, realpwd;
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 
 
       catch (...) {
-        cout << "Unknown Command\n";
+        cout << "Unknown Command\n"; //Need to send fail command too
         close(new_fd);
       }
 
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
             recv(new_fd , inbuffer, 1024, 0);
             inbuff = string(inbuffer);
             if (inbuff == "quit\0") {
-              cout << "Quitting\n";
+              cout << "Bye " << username <<"\n";
               close(new_fd);
               // exit(1);
             }

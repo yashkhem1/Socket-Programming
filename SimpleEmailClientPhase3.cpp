@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
         vector<int> mvector;
         string token;
 
+
         try {
             while (getline(ss, token, ',')) {
                 mvector.push_back(stoi(token));
@@ -57,17 +58,26 @@ int main(int argc, char *argv[]) {
         // cout << mvector.size();
 
         string local = argv[5];
-        const char* lfolder = local.c_str();
-        struct dirent *dp;
-        DIR *fd;
 
-        if (!((fd = opendir(lfolder)) == NULL)) {
-            string remove = "rm -rf " + local;
-            system(remove.c_str());
+        try{
+            const char* lfolder = local.c_str();
+            struct dirent *dp;
+            DIR *fd;
+
+            if (!((fd = opendir(lfolder)) == NULL)) {
+                string remove = "rm -rf " + local;
+                system(remove.c_str());
+            }
+
+            int test = mkdir(local.c_str(), 0777);
         }
 
-        int test = mkdir(local.c_str(), 0777);
-        cout << "Test " << test << "\n";
+        catch (...) {
+            cerr << "Unable to create the folder";
+            exit(4);
+        }
+
+        //cout << "Test " << test << "\n";
 
 
         //Initializing Buffers
@@ -125,7 +135,7 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
 
-        cout << inbuff << "\n";
+        //cout << inbuff << "\n";   //This returns okay if user database is accessible
 
         //Send number of files to be sent
         string numfiles = to_string(mvector.size()) + '\0';
@@ -151,15 +161,16 @@ int main(int argc, char *argv[]) {
                 exit(1);
             }
             else{
-                cout << string(inbuffer)<<"\n";
+                //cout << string(inbuffer)<<"\n";
                 string filepath = local + "/" + string(inbuffer);
                 FILE* wfile;
                 wfile = fopen(filepath.c_str(),"wb");
                 recv(client_fd, inbuffer, 1024, 0);//Rreceive the remaining bits for the last batch
+                // cout << "stoi se pehle wala " << inbuffer << "\n";
                 int remBytes = stoi(string(inbuffer));
                 recv(client_fd , inbuffer, 1024, 0); //Receive the number of batches of file read and write
                 long numBatches = stol(string(inbuffer));
-                cout << numBatches << "\n";
+                //cout << numBatches << "\n";
                 for(int j = 0; j < numBatches; j++){
                     if(j==numBatches-1){
                         recv(client_fd, inbuffer, remBytes, 0);
