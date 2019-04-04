@@ -243,6 +243,7 @@ int main(int argc, char *argv[]) {
                 // cout << "numBatches " << numBatches << "\n";
                 strcpy(outbuffer, to_string(numBatches).c_str());
                 send(new_fd, outbuffer, 1024, 0);
+                cout << username <<": Transferring Message " << mid << "\n";
                 for (int j = 0; j < numBatches; j++){
                   // cout << "Entering Batch " << j << "\n";
                   if((j == numBatches-1) && remBytes!=0){
