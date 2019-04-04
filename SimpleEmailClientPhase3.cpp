@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
                 long numBatches = stol(string(inbuffer));
                 //cout << numBatches << "\n";
                 for(int j = 0; j < numBatches; j++){
-                    if(j==numBatches-1){
+                    if((j==numBatches-1)&&remBytes!=0){
                         recv(client_fd, inbuffer, remBytes, 0);
                         fwrite(inbuffer, 1, remBytes, wfile);
                     }

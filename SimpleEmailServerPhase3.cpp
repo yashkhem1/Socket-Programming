@@ -11,6 +11,7 @@
 #include <fstream>
 #include<sys/un.h>
 #include <dirent.h>
+#include <cmath>
 using namespace std;
 
 
@@ -238,11 +239,13 @@ int main(int argc, char *argv[]) {
                 // cout << "RemBytes " << remBytes << "\n";  //Debugging wala
                 strcpy(outbuffer, to_string(remBytes).c_str());
                 send(new_fd, outbuffer, 1024, 0);
-                long numBatches = filesize/1024 + 1;
+                long numBatches = ceil(filesize/1024.0);
+                // cout << "numBatches " << numBatches << "\n";
                 strcpy(outbuffer, to_string(numBatches).c_str());
                 send(new_fd, outbuffer, 1024, 0);
                 for (int j = 0; j < numBatches; j++){
-                  if(j == numBatches-1){
+                  // cout << "Entering Batch " << j << "\n";
+                  if((j == numBatches-1) && remBytes!=0){
                     fread(outbuffer,1,remBytes,rFile);
                     send(new_fd, outbuffer, remBytes, 0);
                   }

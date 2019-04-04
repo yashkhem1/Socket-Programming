@@ -13,6 +13,7 @@
 #include<sys/un.h>
 #include <dirent.h>
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
+#include <cmath>
 using namespace std;
 
 
@@ -337,12 +338,12 @@ int main(int argc, char *argv[]) {
                   // cout << "RemBytes " << remBytes << "\n";  //Debugging wala
                   strcpy(outbuffer, to_string(remBytes).c_str());
                   send(new_fd, outbuffer, 1024, 0);
-                  long numBatches = filesize / 1024 + 1;
+                  long numBatches = ceil(filesize / 1024.0);
                   strcpy(outbuffer, to_string(numBatches).c_str());
                   send(new_fd, outbuffer, 1024, 0);
                   cout << username <<": Transferring Message " << mid << "\n";
                   for (int j = 0; j < numBatches; j++) {
-                    if (j == numBatches - 1) {
+                    if ((j == numBatches-1) && remBytes!=0) {
                       fread(outbuffer, 1, remBytes, rFile);
                       send(new_fd, outbuffer, remBytes, 0);
                     }
