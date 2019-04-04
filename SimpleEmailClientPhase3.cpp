@@ -18,6 +18,15 @@ using namespace std;
 
 //End the iostream strings with "\n" always.
 
+bool isNumber(string s)
+{
+    for (int i = 0; i < s.length(); i++)
+        if (isdigit(s[i]) == false)
+            return false;
+
+    return true;
+}
+
 
 int main(int argc, char *argv[]) {
     if (argc != 6) {
@@ -44,16 +53,27 @@ int main(int argc, char *argv[]) {
         string token;
 
 
-        try {
-            while (getline(ss, token, ',')) {
+        // try {
+        //     while (getline(ss, token, ',')) {
+        //         mvector.push_back(stoi(token));
+        //     }
+        // }
+
+        // catch (...) {
+        //     cerr << "Need a list of integers";
+        //     exit(3);
+        // }
+        while (getline(ss, token, ',')){
+            if(isNumber(token)){
                 mvector.push_back(stoi(token));
+            }
+
+            else{
+                cerr << "Need a list of integers";
+                exit(3);
             }
         }
 
-        catch (...) {
-            cerr << "Need a list of integers";
-            exit(3);
-        }
 
         // cout << mvector.size();
 

@@ -98,6 +98,8 @@ int main(int argc, char *argv[]) {
       strcpy(outbuffer,"fail");
       send(new_fd,outbuffer,1024,0);
       close(new_fd);
+      close(sock_fd);
+      exit(1);
     }
 
     // Checking the user in the file
@@ -126,6 +128,7 @@ int main(int argc, char *argv[]) {
       // recv(new_fd, inbuffer, 1024, 0);
       close(new_fd);
       close(sock_fd);
+      exit(1);
     }
 
     //Checking if the password matches
@@ -135,6 +138,7 @@ int main(int argc, char *argv[]) {
       send(new_fd,outbuffer,1024,0);
       close(new_fd);
       close(sock_fd);
+      exit(1);
       // close(sock_fd);
     }
 
@@ -153,12 +157,14 @@ int main(int argc, char *argv[]) {
         cout << "Bye " << username <<"\n";
         close(new_fd);
         close(sock_fd);
+        exit(1);
         // exit(1);
       }
       else {
         cout << "Unknown command\n";
         close(new_fd);
         close(sock_fd);
+        exit(1);
       }
       //}
 
