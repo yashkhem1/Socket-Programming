@@ -20,8 +20,8 @@ using namespace std;
 
 
 int main(int argc, char *argv[]) {
-    if (argc != 6) {
-        cerr << "Usage : ./main <serverIPAddr:port> <user-name> <passwd> <list-of-messages> <local-folder>";
+    if (argc != 7) {
+        cerr << "Usage : ./main <serverIPAddr:port> <user-name> <passwd> <list-of-messages> <local-folder> <interval>";
         exit(1);
     }
 
@@ -136,13 +136,13 @@ int main(int argc, char *argv[]) {
         }
 
         //Remove this inbuff
-        cout << inbuff << "\n";
+        //cout << inbuff << "\n";  ---DEBUGTOOL
 
         //cout << inbuff << "\n";   //This returns okay if user database is accessible
 
-
-        sleep(6);
-        cout <<"Ho gaye 2 second\n";
+        int interval = stoi(argv[6]);
+        sleep(interval);
+        //cout <<"Ho gaye 2 second\n";
 
         //Send number of files to be sent
         string numfiles = to_string(mvector.size()) + '\0';

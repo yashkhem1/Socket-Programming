@@ -104,8 +104,9 @@ int main(int argc, char *argv[]) {
     int addrlen = sizeof(struct sockaddr_in);
     // char* ip;
 
-    while (1) {
 
+
+    while (1) {
       //Clearing the fd_set
       FD_ZERO(&readfds);
 
@@ -128,11 +129,13 @@ int main(int argc, char *argv[]) {
           max_sd = sd;
       }
 
+      //cout << "Max_Sd" << max_sd <<"\n";--DEBUGTOOL
+
       activity = select( max_sd + 1 , &readfds , NULL , NULL , NULL);
 
       if ((activity < 0) && (errno != EINTR))
       {
-        printf("select error");
+        printf("select error\n");
       }
 
       //If something happened on the master socket ,
@@ -142,6 +145,7 @@ int main(int argc, char *argv[]) {
         //Accepting incoming connection on Socket
 
         new_fd = accept(sock_fd, (struct sockaddr *)&peer_addr, (socklen_t*)&addrlen);
+        //cout << "new_fd " << new_fd <<"\n";  --DEBUGTOOL
         char ip[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(peer_addr.sin_addr), ip, INET_ADDRSTRLEN);
         cout << "Client: " << ip << ":" <<  ntohs(peer_addr.sin_port) << "\n";
@@ -240,7 +244,7 @@ int main(int argc, char *argv[]) {
             if ( client_socket[i] == 0 ) {
               client_socket[i] = new_fd;
               userArray[i] = username;
-              printf("Adding to list of sockets as %d\n" , i);
+            //  printf("Adding to list of sockets as %d\n" , i); --DEBUGTOOL
 
               break;
             }
@@ -253,7 +257,7 @@ int main(int argc, char *argv[]) {
       //Otherwise its some io operation on some other socket.
       else {
 
-        cout << "Entering the else loop\n";
+       // cout << "Entering the else loop\n"; --DEBUGTOOL
 
         for (int i = 0; i < max_clients; i++) {
 
@@ -262,7 +266,9 @@ int main(int argc, char *argv[]) {
 
 
             //Get the username and userdatabase.
+            //cout <<"i " <<i <<"\n"; --DEBUGTOOL
             string username = userArray[i];
+            //cout << "Username: " << username << "\n";  --DEBUGTOOL
             string userdb = db + "/" + username;
             const char* userdbase = userdb.c_str();
             struct dirent *userdp;
@@ -271,17 +277,18 @@ int main(int argc, char *argv[]) {
             recv(new_fd , inbuffer, 1024, 0);
             string inbuff = string(inbuffer);
             //cout << inbuff << "\n";
-            cout << "Isse pehle wala\n";
-            cout << inbuff << "\n";
+            //cout << "Isse pehle wala\n"; ---DEBUGTOOL
+            //cout << inbuff << "\n";   ---DEBUGTOOL
             int num_messages = stoi(inbuff);
 
 
             //FILE TRANSFER DONE :- BUG only one file is being transferred . Check that
             //Bug Removed
             int successread = 1;
-            for (int i = 0; i < num_messages; i++) {
+            for (int j = 0; j < num_messages; j++) { //BUG: The variable was same as i
               recv(new_fd , inbuffer, 1024, 0);
               inbuff = string(inbuffer);
+              //cout << inbuff << "\n"; //To check whether message is actually RETRV --DEBUGTOOL
               if (inbuff.find("RETRV") != std::string::npos) {
                 strcpy(outbuffer, "okay");
                 send(new_fd, outbuffer, 1024, 0);
@@ -300,12 +307,15 @@ int main(int argc, char *argv[]) {
                   }
                 }
                 closedir(userfd);  //Brings back pointer to the top
+                //cout <<"Count " << count <<"\n";
 
                 if (count == 0) {
+                  //cout << "this one message\n";
                   cout << "Message Read Fail\n";
                   // cout << "Yeh wala\n";
                   successread = 0;
                   strcpy(outbuffer, "fail");
+                  client_socket[i]=0;
                   send(new_fd, outbuffer, 1024, 0);
                   close(new_fd);
                   break;
@@ -330,6 +340,7 @@ int main(int argc, char *argv[]) {
                   long numBatches = filesize / 1024 + 1;
                   strcpy(outbuffer, to_string(numBatches).c_str());
                   send(new_fd, outbuffer, 1024, 0);
+                  cout << username <<": Transferring Message " << mid << "\n";
                   for (int j = 0; j < numBatches; j++) {
                     if (j == numBatches - 1) {
                       fread(outbuffer, 1, remBytes, rFile);
@@ -351,6 +362,7 @@ int main(int argc, char *argv[]) {
                 cout << "Unknown Command\n";
                 successread = 0;
                 strcpy(outbuffer, "fail");
+                client_socket[i]=0;
                 send(new_fd, outbuffer, 1024, 0);
                 close(new_fd);
                 break;
@@ -365,12 +377,14 @@ int main(int argc, char *argv[]) {
               // cout << inbuff << "\n";
               if (inbuff == "quit") {
                 cout << "Bye " << username << "\n";
+                client_socket[i]=0;
                 close(new_fd);
               }
 
               else {
                 cout << "Unknown Comand\n";
                 //cout << "Yeh wala\n";
+                client_socket[i]=0;
                 close(new_fd);
               }
             }
